@@ -32,6 +32,8 @@ input
     |> Seq.sum
     |> printfn "%d"
 
+// -------------------------------------------------------
+
 type RpsOpts =
     | Rock = 1
     | Paper = 2
@@ -67,3 +69,24 @@ let winOver rpsOpt =
     ) 
     |> Seq.sum
     |> printfn "%d"
+
+// -------------------------------------------------------
+
+"input3.txt"
+    |> File.ReadAllLines
+    |> Seq.map(fun s -> (s.Substring(0, s.Length / 2), s.Substring(s.Length / 2, s.Length / 2)))
+    |> Seq.map(fun (comp1, comp2) -> comp1 |> Seq.filter(fun c -> comp2.Contains(c)))
+    |> Seq.map(fun c -> c |> Seq.head)
+    |> Seq.map(fun c -> if c >= 'a' && c <= 'z' then (int((c - 'a') + (char)1)) else (int((c - 'A') + (char)27)))
+    |> Seq.sum
+    |> printfn "%d"
+
+"input3.txt"
+    |> File.ReadAllLines
+    |> Seq.chunkBySize 3
+    |> Seq.map(fun x -> (x[0], x[1], x[2]))
+    |> Seq.map(fun (comp1, comp2, comp3) -> comp1 |> Seq.filter(fun c -> comp2.Contains(c) && comp3.Contains(c)))
+    |> Seq.map(fun c -> c |> Seq.head)
+    |> Seq.map(fun c -> if c >= 'a' && c <= 'z' then (int((c - 'a') + (char)1)) else (int((c - 'A') + (char)27)))
+    |> Seq.sum
+    |> printfn "%d"        
