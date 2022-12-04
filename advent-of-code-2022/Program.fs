@@ -86,7 +86,7 @@ let winOver rpsOpt =
     |> File.ReadAllLines
     |> Seq.map(fun r ->
         r[..r.Length/2] |> Seq.find(r[r.Length/2..].Contains) |> int
-        |> fun c -> if c >= 97 then c - 96 else c - 38
+        |> fun c -> c - if c > 96 then 96 else 38
     )
     |> Seq.sum
     |> printfn "%d"
@@ -101,9 +101,9 @@ let winOver rpsOpt =
     |> Seq.sum
     |> printfn "%d"        
 
-let split c (str:string) = str.Split [|c|]
-
 // -------------------------------------------------------
+
+let split c (str:string) = str.Split [|c|]
 
 "input4.txt"
     |> File.ReadAllLines
