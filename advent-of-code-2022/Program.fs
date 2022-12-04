@@ -90,3 +90,35 @@ let winOver rpsOpt =
     |> Seq.map(fun c -> if c >= 'a' && c <= 'z' then (int((c - 'a') + (char)1)) else (int((c - 'A') + (char)27)))
     |> Seq.sum
     |> printfn "%d"        
+
+let split c (str:string) = str.Split [|c|]
+
+"input4.txt"
+    |> File.ReadAllLines
+    |> Seq.map(fun line -> line
+                        |> split ','
+                        |> Seq.map(split '-')
+                        |> Seq.map(fun pair -> set {int pair[0]..int pair[1]})
+                        |> Seq.toList
+                        |> function
+                           | [l1;l2;] -> l1.IsSubsetOf(l2) || l2.IsSubsetOf(l1)
+                           | _ -> false
+    )
+    |> Seq.filter(fun t -> t)
+    |> Seq.length
+    |> printfn "%d"
+
+"input4.txt"
+    |> File.ReadAllLines
+    |> Seq.map(fun line -> line
+                        |> split ','
+                        |> Seq.map(split '-')
+                        |> Seq.map(fun pair -> set {int pair[0]..int pair[1]})
+                        |> Seq.toList
+                        |> function
+                           | [l1;l2;] -> Set.intersect l1 l2
+                           | _ -> Set.empty
+    )
+    |> Seq.filter(fun s -> s.Count > 0)
+    |> Seq.length
+    |> printfn "%d"
