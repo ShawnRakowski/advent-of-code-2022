@@ -134,3 +134,54 @@ let split c (str:string) = str.Split [|c|]
     |> Seq.filter(fun s -> s.Count > 0)
     |> Seq.length
     |> printfn "%d"
+
+// -------------------------------------------------------
+
+let input5 = "input5.txt" |> File.ReadAllLines
+let realize x = x |> Seq.toArray |> Array.toSeq
+
+let stacks = input5 
+             |> Seq.takeWhile(not << String.IsNullOrWhiteSpace)
+             |> Seq.rev
+             |> Seq.map(fun line -> line + " "
+                                 |> Seq.chunkBySize 4
+                                 |> Seq.map(fun c -> c |> String)
+                                 |> Seq.map(fun c -> c.Trim [|' ';'[';']'|])
+             )
+             |> Seq.skip 1
+             |> fun rows -> (rows |> Seq.head |> Seq.map(fun _ -> list<string>.Empty), rows)
+             ||> Seq.fold(fun acc curr -> Seq.zip acc curr |> Seq.map(fun (a, b) -> a @ [b]))
+             |> Seq.map(Seq.filter(not << String.IsNullOrWhiteSpace))
+             |> realize
+
+let commands = input5 
+               |> Seq.skipWhile(not << String.IsNullOrWhiteSpace)
+               |> Seq.skip 1
+               |> Seq.filter(not << String.IsNullOrWhiteSpace)
+               |> Seq.map(fun cmd -> cmd.Split())
+               |> Seq.map(fun cmd -> (int cmd[1], int cmd[3] - 1, int cmd[5] - 1))
+               |> realize
+
+(stacks, commands)
+    ||> Seq.fold(fun stks (c, si, di) -> (stks |> Seq.item(si) |> Seq.rev, stks |> Seq.item(di))
+                                      |> fun (revSrc, dst) -> (revSrc |> Seq.skip(c) |> Seq.rev, Seq.append dst (revSrc |> Seq.take(c)))
+                                      |> fun (nSrc, nDst) -> (stks |> Seq.updateAt si nSrc, nDst)
+                                      |> fun (nStks, nDst) -> nStks |> Seq.updateAt di nDst
+                                      |> Seq.map(realize)
+                                      |> realize
+    )
+    |> Seq.map(Seq.last)
+    |> String.concat String.Empty
+    |> printfn "%s"
+
+(stacks, commands)
+    ||> Seq.fold(fun stks (c, si, di) -> (stks |> Seq.item(si) |> Seq.rev, stks |> Seq.item(di))
+                                      |> fun (revSrc, dst) -> (revSrc |> Seq.skip(c) |> Seq.rev, Seq.append dst (revSrc |> Seq.take(c) |> Seq.rev))
+                                      |> fun (nSrc, nDst) -> (stks |> Seq.updateAt si nSrc, nDst)
+                                      |> fun (nStks, nDst) -> nStks |> Seq.updateAt di nDst
+                                      |> Seq.map(realize)
+                                      |> realize
+    )
+    |> Seq.map(Seq.last)
+    |> String.concat String.Empty
+    |> printfn "%s"
