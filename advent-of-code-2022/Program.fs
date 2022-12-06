@@ -185,3 +185,26 @@ let commands = input5
     |> Seq.map(Seq.last)
     |> String.concat String.Empty
     |> printfn "%s"
+
+// -------------------------------------------------------
+
+let rec seqsOf c s = s 
+                  |> Seq.take c |> realize
+                  |> fun setOf4 -> [setOf4] @ (s |> Seq.skip 1 
+                                                 |> realize
+                                                 |> function
+                                                    | set when set |> Seq.length > c -> set |> seqsOf c
+                                                    | _ -> []
+                                              )
+
+let day6 c = "input6.txt"
+           |> File.ReadAllLines |> Seq.head
+           |> seqsOf c
+           |> Seq.findIndex(fun s -> s |> Seq.distinct |> Seq.length = c)
+           |> fun idx -> idx + c
+           |> printfn "%d"
+
+day6 4
+day6 14
+
+// -------------------------------------------------------
