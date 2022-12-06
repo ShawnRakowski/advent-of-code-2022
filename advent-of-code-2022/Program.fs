@@ -1,6 +1,11 @@
 ﻿open System
 open System.IO
 
+let split c (str:string) = str.Split [|c|]
+let realize x = x |> Seq.toArray |> Array.toSeq
+
+// -------------------------------------------------------
+
 let input = (([], 0), File.ReadAllLines("input.txt"))
             ||> Seq.fold(fun (l, c) curr -> if String.IsNullOrWhiteSpace(curr) then ((l @ [c]), 0) else (l, c + int curr))
             |> fun (l, c) -> l @ [c]
@@ -103,8 +108,6 @@ let winOver rpsOpt =
 
 // -------------------------------------------------------
 
-let split c (str:string) = str.Split [|c|]
-
 "input4.txt"
     |> File.ReadAllLines
     |> Seq.map(fun line -> line
@@ -138,7 +141,6 @@ let split c (str:string) = str.Split [|c|]
 // -------------------------------------------------------
 
 let input5 = "input5.txt" |> File.ReadAllLines
-let realize x = x |> Seq.toArray |> Array.toSeq
 
 let stacks = input5 
              |> Seq.takeWhile(not << String.IsNullOrWhiteSpace)
