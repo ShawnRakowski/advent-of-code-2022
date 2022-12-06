@@ -191,13 +191,13 @@ let commands = input5
 // -------------------------------------------------------
 
 let rec seqsOf c s = s 
-                  |> Seq.take c |> realize
-                  |> fun seqOfC -> [seqOfC] @ (s |> Seq.skip 1 
-                                                 |> realize
-                                                 |> function
-                                                    | set when set |> Seq.length > c -> set |> seqsOf c
-                                                    | _ -> []
-                                              )
+                   |> Seq.take c |> realize
+                   |> fun seqOfC -> [seqOfC] @ (s |> Seq.tail
+                                                  |> realize
+                                                  |> function
+                                                     | set when set |> Seq.length > c -> set |> seqsOf c
+                                                     | _ -> []
+                                               )
 
 let day6 c = "input6.txt"
            |> File.ReadAllLines |> Seq.head
@@ -208,5 +208,20 @@ let day6 c = "input6.txt"
 
 day6 4
 day6 14
+
+// alt version
+
+let rec findSeq c i s = s |> Seq.take c |> Seq.distinct |> Seq.length
+                          |> function
+                             | l when l = c -> i + c
+                             | _ -> findSeq c (i + 1) (s |> Seq.tail |> realize)
+
+let day6Alt c = "input6.txt" 
+              |> File.ReadAllLines |> Seq.head
+              |> findSeq c 0
+              |> printfn "%d"
+
+day6Alt 4
+day6Alt 14
 
 // -------------------------------------------------------
