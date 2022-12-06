@@ -190,7 +190,7 @@ let commands = input5
 
 let rec seqsOf c s = s 
                   |> Seq.take c |> realize
-                  |> fun setOf4 -> [setOf4] @ (s |> Seq.skip 1 
+                  |> fun seqOfC -> [seqOfC] @ (s |> Seq.skip 1 
                                                  |> realize
                                                  |> function
                                                     | set when set |> Seq.length > c -> set |> seqsOf c
