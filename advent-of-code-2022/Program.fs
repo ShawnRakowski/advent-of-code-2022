@@ -268,10 +268,10 @@ dirSizes
     |> printfn "%d"
 
 let totalUsed = dirSizes |> Seq.max
-let requiredSpace = 70_000_000 - 30_000_000
+let maxConsumedSpace = 70_000_000 - 30_000_000
 
 dirSizes
-    |> Seq.filter(fun s -> totalUsed - s <= requiredSpace)
+    |> Seq.filter(fun s -> totalUsed - s <= maxConsumedSpace)
     |> Seq.sort
     |> Seq.head
     |> printfn "%d"
