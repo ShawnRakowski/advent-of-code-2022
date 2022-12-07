@@ -225,3 +225,51 @@ day6Alt 4
 day6Alt 14
 
 // -------------------------------------------------------
+
+//type LSEntry =
+//    | FileEntry of FileLS
+//    | DirEntry of DirLS
+//and FileLS = { Name: string; Size: int }
+//and DirLS = { Name: string; Entries: list<LSEntry>; Parent : Option<DirLS> }
+
+//let cd currDir cdTo =
+//    currDir.Entries |> Seq.find(function
+//                       | LSEntry.DirEntry d -> d.Name = cdTo
+//                       | LSEntry.FileEntry _ -> false)
+//                    |> function
+//                       | LSEntry.DirEntry d -> d
+//                       | _ -> currDir
+
+//let addDir currDir newDirName = 
+//    if currDir.Entries |> Seq.exists(function
+//                                     | LSEntry.DirEntry d -> d.Name = newDirName
+//                                     | _ -> false)
+//    then currDir
+//    else { Name = currDir.Name; Entries = DirEntry({ Name = newDirName; Entries = []; Parent = Some(currDir) })::currDir.Entries; Parent = currDir.Parent }
+
+//let addFile currDir newFileName size =
+//    if currDir.Entries |> Seq.exists(function
+//                                     | LSEntry.FileEntry f -> f.Name = newFileName
+//                                     | _ -> false)
+//    then currDir
+//    else { Name = currDir.Name; Entries = FileEntry({ Name = newFileName; Size = size })::currDir.Entries; Parent = currDir.Parent}
+
+//let rec root = 
+
+//let root = "input7.txt"
+//         |> File.ReadAllLines |> Seq.filter(not << String.IsNullOrWhiteSpace)
+//         |> Seq.map(fun line -> line.Trim().Split(' ') |> Array.toList)
+//         |> fun lines -> ({ Name = "\\"; Entries = []; Parent = None }, lines)
+//         ||> Seq.fold(fun currDir line -> 
+//             match line with
+//             | "$"::"cd"::"\\"::_ -> root
+//             | "$"::"cd"::".."::_ -> match currDir.Parent with
+//                                     | Some parent -> parent
+//                                     | None -> root        
+//             | "$"::"cd"::cdTo::_ -> cd currDir cdTo
+//             | "$"::"ls"::_ -> currDir
+//             | "dir"::dirName::_ -> addDir currDir dirName
+//             | size::newFileName::_ -> addFile currDir newFileName (int size)
+//             | _ -> currDir
+//         )
+ 
