@@ -4,8 +4,6 @@ open System.IO
 let split c (str:string) = str.Split [|c|]
 let realize x = x |> Seq.toArray |> Array.toSeq
 
-(*
-
 // -------------------------------------------------------
 
 let input = (([], 0), File.ReadAllLines("input.txt"))
@@ -227,7 +225,6 @@ day6Alt 4
 day6Alt 14
 
 // -------------------------------------------------------
-*)
 
 type DirEntry = { Path: string; Size: Option<int64> }
 
@@ -275,3 +272,5 @@ dirSizes
     |> Seq.sort
     |> Seq.head
     |> printfn "%d"
+
+// -------------------------------------------------------
