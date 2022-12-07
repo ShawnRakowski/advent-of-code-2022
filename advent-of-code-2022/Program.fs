@@ -4,6 +4,8 @@ open System.IO
 let split c (str:string) = str.Split [|c|]
 let realize x = x |> Seq.toArray |> Array.toSeq
 
+(*
+
 // -------------------------------------------------------
 
 let input = (([], 0), File.ReadAllLines("input.txt"))
@@ -225,52 +227,51 @@ day6Alt 4
 day6Alt 14
 
 // -------------------------------------------------------
+*)
 
-//type LSEntry =
-//    | FileEntry of FileLS
-//    | DirEntry of DirLS
-//and FileLS = { Name: string; Size: int }
-//and DirLS = { Name: string; Entries: list<LSEntry>; Parent : Option<DirLS> }
+type DirEntry = { Path: string; Size: Option<int64> }
 
-//let cd currDir cdTo =
-//    currDir.Entries |> Seq.find(function
-//                       | LSEntry.DirEntry d -> d.Name = cdTo
-//                       | LSEntry.FileEntry _ -> false)
-//                    |> function
-//                       | LSEntry.DirEntry d -> d
-//                       | _ -> currDir
+let entries = "input7.txt"
+            |> File.ReadAllLines |> Seq.filter(not << String.IsNullOrWhiteSpace)
+            |> Seq.map(fun line -> line.Trim().Split(' ') |> Array.toList)
+            |> fun lines -> (("/", [{Path=""; Size = None}]), lines)
+            ||> Seq.fold(fun (currPath, entries) line -> 
+                match line with
+                | "$"::"cd"::"/"::_ -> ("\\", entries)
+                | "$"::"cd"::".."::_ -> (currPath |> Path.GetDirectoryName, entries)
+                | "$"::"cd"::cdTo::_ -> (Path.Combine(currPath, cdTo), entries)
+                | "$"::_ -> (currPath, entries)
+                | "dir"::dirName::_ -> (currPath, { Path = Path.Combine(currPath, dirName); Size = None}::entries)
+                | size::fileName::_ -> (currPath, { Path = Path.Combine(currPath, fileName); Size = Some(int64 size)}::entries)
+                | _ -> (currPath, entries))
+            |> fun (_, entries) -> entries
+            |> Seq.distinctBy(fun e -> e.Path)
+            |> realize
 
-//let addDir currDir newDirName = 
-//    if currDir.Entries |> Seq.exists(function
-//                                     | LSEntry.DirEntry d -> d.Name = newDirName
-//                                     | _ -> false)
-//    then currDir
-//    else { Name = currDir.Name; Entries = DirEntry({ Name = newDirName; Entries = []; Parent = Some(currDir) })::currDir.Entries; Parent = currDir.Parent }
+let dirSizes = entries
+             |> Seq.filter(fun e -> match e.Size with
+                                     | None -> true
+                                     | _ -> false)
+             |> Seq.map(fun e -> e.Path + "\\")
+             |> realize
+             |> Seq.map(fun dir -> entries
+                                     |> Seq.filter(fun e -> e.Path.StartsWith dir)
+                                     |> Seq.map(fun e -> match e.Size with
+                                                         | Some size -> size
+                                                         | None -> 0)
+                                     |> Seq.sum)
+             |> realize
 
-//let addFile currDir newFileName size =
-//    if currDir.Entries |> Seq.exists(function
-//                                     | LSEntry.FileEntry f -> f.Name = newFileName
-//                                     | _ -> false)
-//    then currDir
-//    else { Name = currDir.Name; Entries = FileEntry({ Name = newFileName; Size = size })::currDir.Entries; Parent = currDir.Parent}
+dirSizes
+    |> Seq.filter(fun size -> size <= 100_000)
+    |> Seq.sum
+    |> printfn "%d"
 
-//let rec root = 
+let totalUsed = dirSizes |> Seq.max
+let requiredSpace = 70_000_000 - 30_000_000
 
-//let root = "input7.txt"
-//         |> File.ReadAllLines |> Seq.filter(not << String.IsNullOrWhiteSpace)
-//         |> Seq.map(fun line -> line.Trim().Split(' ') |> Array.toList)
-//         |> fun lines -> ({ Name = "\\"; Entries = []; Parent = None }, lines)
-//         ||> Seq.fold(fun currDir line -> 
-//             match line with
-//             | "$"::"cd"::"\\"::_ -> root
-//             | "$"::"cd"::".."::_ -> match currDir.Parent with
-//                                     | Some parent -> parent
-//                                     | None -> root        
-//             | "$"::"cd"::cdTo::_ -> cd currDir cdTo
-//             | "$"::"ls"::_ -> currDir
-//             | "dir"::dirName::_ -> addDir currDir dirName
-//             | size::newFileName::_ -> addFile currDir newFileName (int size)
-//             | _ -> currDir
-//         )
- 
- // WRONG!
+dirSizes
+    |> Seq.filter(fun s -> totalUsed - s <= requiredSpace)
+    |> Seq.sort
+    |> Seq.head
+    |> printfn "%d"
